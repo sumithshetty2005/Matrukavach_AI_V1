@@ -1,18 +1,19 @@
 from dotenv import load_dotenv
 load_dotenv()
+import os
 
-import phoenix as px
-from phoenix.otel import register
-from openinference.instrumentation.langchain import LangChainInstrumentor
+if os.getenv("PHOENIX_ENABLED", "false").lower() == "true":
+    from phoenix.otel import register
+    from openinference.instrumentation.langchain import LangChainInstrumentor
 
-# 1. Register Phoenix tracer provider targeting the collector
-tracer_provider = register(
-    project_name="default",
-    endpoint="http://localhost:6006/v1/traces",
-)
-
-# 2. Instrument all LangChain and LangGraph calls
-LangChainInstrumentor().instrument(tracer_provider=tracer_provider)
+    tracer_provider = register(
+        project_name=os.getenv("PHOENIX_PROJECT_NAME", "default"),
+        endpoint=os.getenv(
+            "PHOENIX_ENDPOINT",
+            "http://localhost:6006/v1/traces",
+        ),
+    )
+    LangChainInstrumentor().instrument(tracer_provider=tracer_provider)
 
 from fastapi import FastAPI, Depends, HTTPException, File, UploadFile
 from fastapi.responses import FileResponse
@@ -475,4 +476,3 @@ async def shutdown_event():
             await qe.worker_task_ref
         except asyncio.CancelledError:
             pass
-
