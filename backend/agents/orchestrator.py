@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from .geospatial import get_environmental_data, Coordinates
 from .clinical import assess_clinical_risk, ClinicalVitals
 from .nutrition import generate_nutrition_advice
@@ -89,7 +89,7 @@ class MatruKavachOrchestrator:
             medication_reminders=[], 
             environmental_impact=current_values.get("environmental_impact", ""),
             clinical_justification=f"[PENDING CLINICIAN CONFIRMATION] {current_values.get('clinical_justification', 'Awaiting medical practitioner confirmation.')}",
-            timestamp=datetime.now()
+            timestamp=datetime.now(timezone.utc)
         )
 
     async def handle_doctor_action(self, mother_id: str, approved: bool, override_notes: str = ""):

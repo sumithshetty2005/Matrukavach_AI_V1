@@ -31,7 +31,7 @@ import socketio
 import os
 import shutil
 from fastapi import File, UploadFile, Form
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from socket_instance import sio
 from routers import auth as auth_router, voice as voice_router, share as share_router, queue_engine as queue_engine_router, ehr_sync, dispatch as dispatch_router, translation as translation_router
@@ -252,7 +252,7 @@ def get_chat_history(mother_id: str, session: SessionDep):
 
 @app.post("/chat")
 def send_chat_message(message: ChatMessage, session: SessionDep):
-    message.timestamp = datetime.now()
+    message.timestamp = datetime.now(timezone.utc)
     session.add(message)
     session.commit()
     return message
@@ -268,7 +268,7 @@ def create_consultation(mother_id: str, consultation: Consultation, session: Ses
         raise HTTPException(status_code=404, detail="Mother not found")
         
     consultation.mother_id = mother_id
-    consultation.created_at = datetime.now()
+    consultation.created_at = datetime.now(timezone.utc)
     if isinstance(consultation.next_consultation_date, str):
         try:
             

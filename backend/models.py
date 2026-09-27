@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 
 class Doctor(SQLModel, table=True):
     id: str = Field(primary_key=True)
@@ -50,7 +50,7 @@ class AssessmentData(SQLModel, table=True):
     hemoglobin: float
     glucose: int
     heart_rate: int
-    timestamp: datetime = Field(default_factory=datetime.now)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     risk_result: Optional["RiskAssessment"] = Relationship(back_populates="assessment_data")
 
@@ -70,7 +70,7 @@ class RiskAssessment(SQLModel, table=True):
     clinical_justification: Optional[str] = None
     asha_consultation_note: Optional[str] = None
     
-    timestamp: datetime = Field(default_factory=datetime.now)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     mother: Optional[MotherProfile] = Relationship(back_populates="assessments")
     assessment_data: Optional[AssessmentData] = Relationship(back_populates="risk_result")
@@ -83,7 +83,7 @@ class ChatMessage(SQLModel, table=True):
     translated_text: Optional[str] = None
     is_voice: bool = Field(default=False)
     priority: str = Field(default="GREEN") 
-    timestamp: datetime = Field(default_factory=datetime.now)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     
     mother: Optional[MotherProfile] = Relationship(back_populates="chat_messages")
 
@@ -149,5 +149,4 @@ class ShiftSchedule(SQLModel, table=True):
     travel_mode: str = Field(default="two-wheeler")  # walking or two-wheeler
     distance_km: float = Field(default=0.0)
     estimated_service_time_mins: int = Field(default=15)
-
 
