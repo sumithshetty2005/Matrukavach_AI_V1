@@ -1,7 +1,6 @@
 const CACHE_NAME = "matrukavach-cache-v1";
 const ASSETS_TO_CACHE = [
   "/",
-  "/login",
   "/manifest.json",
   "/icon-192.png",
   "/icon-512.png"
@@ -37,8 +36,13 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const requestUrl = new URL(event.request.url);
 
-  // Skip APIs and Socket connections
-  if (requestUrl.pathname.startsWith("/api") || event.request.url.includes("socket.io")) {
+  // The service worker belongs to Vercel and must not intercept cross-origin
+  // requests to the Render API or Socket.IO server.
+  if (
+    requestUrl.origin !== self.location.origin ||
+    requestUrl.pathname.startsWith("/api") ||
+    event.request.url.includes("socket.io")
+  ) {
     return;
   }
 
