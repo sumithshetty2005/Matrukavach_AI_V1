@@ -40,8 +40,6 @@ create_db_and_tables()
 
 app = FastAPI(title="MatruKavach AI API", version="1.0.0")
 
-socket_app = socketio.ASGIApp(sio, app)
-
 app.include_router(auth_router.router)
 app.include_router(voice_router.router)
 app.include_router(share_router.router)
@@ -67,6 +65,16 @@ if "https://matrukavach-ai-v1.vercel.app" not in allow_origins:
 
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=allow_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Render runs the Socket.IO ASGI wrapper, so CORS must also cover that outer
+# application, including browser preflight requests.
+socket_app = CORSMiddleware(
+    socketio.ASGIApp(sio, app),
     allow_origins=allow_origins,
     allow_credentials=True,
     allow_methods=["*"],
