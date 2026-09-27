@@ -3,16 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Globe, LogOut, User as UserIcon } from "lucide-react";
-import { useAuth } from "@/components/AuthContext";
+import { Menu, X, Globe } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
 import { LANGUAGES, Language } from "@/lib/translations";
 
 export function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const { user, logout } = useAuth();
     const { language, setLanguage, t } = useLanguage();
-    const isSignedIn = !!user;
 
     return (
         <motion.header
@@ -28,9 +25,7 @@ export function Header() {
                 </Link>
 
                 <nav className="hidden md:flex items-center gap-8 font-medium text-black">
-                    {(!user || user.role === "asha") && (
-                        <Link href="/asha" className="hover:text-gray-500 transition-colors">{t("nav.ashaPortal")}</Link>
-                    )}
+                    <Link href="/asha" className="hover:text-gray-500 transition-colors">{t("nav.ashaPortal")}</Link>
 
                     {/* Language Dropdown */}
                     <div className="flex items-center gap-2 bg-gray-100/80 hover:bg-gray-100 px-3 py-1.5 rounded-full border border-gray-200/60 transition-colors">
@@ -48,25 +43,6 @@ export function Header() {
                         </select>
                     </div>
 
-                    {!isSignedIn && (
-                        <Link href="/login">
-                            <button className="bg-black text-white px-4 py-2 rounded-lg font-bold hover:bg-gray-800 transition-all shadow-sm">
-                                {t("nav.signIn")}
-                            </button>
-                        </Link>
-                    )}
-                    {isSignedIn && (
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-full border border-gray-200 text-sm">
-                                <UserIcon className="w-4 h-4 text-gray-500" />
-                                <span className="font-bold text-gray-800">{user?.username}</span>
-                                <span className="text-xs text-gray-400 capitalize">({user?.role})</span>
-                            </div>
-                            <button onClick={logout} className="p-2 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors" title={t("nav.signOut")}>
-                                <LogOut className="w-5 h-5" />
-                            </button>
-                        </div>
-                    )}
                 </nav>
 
                 <div className="md:hidden flex items-center">
@@ -89,9 +65,7 @@ export function Header() {
                         className="md:hidden bg-white border-b border-gray-200 overflow-hidden shadow-2xl relative z-40"
                     >
                         <nav className="flex flex-col px-6 py-6 gap-4 font-medium text-black">
-                            {(!user || user.role === "asha") && (
-                                <Link href="/asha" onClick={() => setIsMobileMenuOpen(false)} className="py-2.5 border-b border-gray-100 hover:text-gray-500 transition-colors">{t("nav.ashaPortal")}</Link>
-                            )}
+                            <Link href="/asha" onClick={() => setIsMobileMenuOpen(false)} className="py-2.5 border-b border-gray-100 hover:text-gray-500 transition-colors">{t("nav.ashaPortal")}</Link>
 
                             {/* Mobile Language Selector */}
                             <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-100 text-sm mt-1">
@@ -110,29 +84,6 @@ export function Header() {
                                 </select>
                             </div>
 
-                            {/* Mobile User Credentials Badge */}
-                            {isSignedIn && (
-                                <div className="flex items-center gap-3 bg-gray-50 px-3 py-2 rounded-xl border border-gray-100 text-sm mt-1">
-                                    <UserIcon className="w-4 h-4 text-gray-400" />
-                                    <div className="flex flex-col min-w-0">
-                                        <span className="font-bold text-gray-800 truncate leading-none mb-1">{user?.username}</span>
-                                        <span className="text-xs text-gray-400 capitalize leading-none">{user?.role} Portal</span>
-                                    </div>
-                                </div>
-                            )}
-
-                            {!isSignedIn && (
-                                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                                    <button className="py-2.5 mt-2 w-full bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition-all text-center">
-                                        {t("nav.signIn")}
-                                    </button>
-                                </Link>
-                            )}
-                            {isSignedIn && (
-                                <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="py-2.5 mt-2 w-full bg-red-50 text-red-600 border border-red-100 rounded-xl font-bold hover:bg-red-100 transition-all flex items-center justify-center gap-2">
-                                    <LogOut className="w-4 h-4" /> {t("nav.signOut")}
-                                </button>
-                            )}
                         </nav>
                     </motion.div>
                 )}

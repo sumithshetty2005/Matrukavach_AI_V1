@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, DM_Serif_Text } from "next/font/google";
 import { GeistSans } from 'geist/font/sans';
-import { AuthProvider } from "@/components/AuthContext";
 import { LanguageProvider } from "@/components/LanguageContext";
 import "./globals.css";
 
@@ -41,8 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AuthProvider>
-      <html lang="en">
+    <html lang="en">
         <body
           className={`${bricolage.variable} ${dmSerif.variable} ${GeistSans.variable} font-body antialiased`}
         >
@@ -65,8 +63,6 @@ export default function RootLayout({
             }}
           />
         </body>
-      </html>
-    </AuthProvider>
+    </html>
   );
 }
-

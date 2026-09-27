@@ -3,7 +3,6 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { API_BASE_URL } from "@/lib/api";
-import { useAuth } from "@/components/AuthContext";
 import { Header } from "@/components/layout/Header";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -13,9 +12,8 @@ import { translateDynamic } from "@/lib/translations";
 
 function SharedContent() {
   const params = useParams();
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
+  const searchParams = useSearchParams();
   const { language, t } = useLanguage();
 
   const motherId = params.id as string;
@@ -38,12 +36,6 @@ function SharedContent() {
         const res = await fetch(`${API_BASE_URL}/share/mother?token=${token}`);
         
         if (res.status === 401) {
-          // If unauthenticated scan, redirect to login page with callback
-          if (!authLoading && !user) {
-            const redirectPath = encodeURIComponent(window.location.pathname + window.location.search);
-            router.push(`/login?redirect=${redirectPath}`);
-            return;
-          }
           setError("This secure sharing link has expired or is invalid.");
         } else if (!res.ok) {
           setError("Failed to fetch verified medical records.");
@@ -59,12 +51,10 @@ function SharedContent() {
       }
     }
 
-    if (!authLoading) {
-      fetchSharedRecord();
-    }
-  }, [token, authLoading, user]);
+    fetchSharedRecord();
+  }, [token]);
 
-  if (authLoading || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center gap-3">
         <HeartPulse className="w-12 h-12 text-primary animate-pulse" />
