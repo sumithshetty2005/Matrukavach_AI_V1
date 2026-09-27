@@ -71,6 +71,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def ensure_browser_cors(request, call_next):
+    response = await call_next(request)
+    origin = request.headers.get("origin")
+    if origin in allow_origins:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Methods"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "*"
+        response.headers["Vary"] = "Origin"
+    return response
+
 # Render runs the Socket.IO ASGI wrapper, so CORS must also cover that outer
 # application, including browser preflight requests.
 socket_app = CORSMiddleware(
