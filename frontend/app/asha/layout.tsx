@@ -1,8 +1,6 @@
 "use client";
 
 import { Header } from "@/components/layout/Header";
-import { LiveAlerts } from "@/components/LiveAlerts";
-
 export default function AshaLayout({
     children,
 }: {
@@ -14,7 +12,7 @@ export default function AshaLayout({
             <div className="container mx-auto px-4 py-8">
                 {children}
             </div>
-            <LiveAlerts />
+
         </div>
     );
 }
