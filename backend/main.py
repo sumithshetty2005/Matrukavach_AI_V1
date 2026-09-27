@@ -50,9 +50,20 @@ app.include_router(ehr_sync.router)
 app.include_router(dispatch_router.router)
 app.include_router(translation_router.router)
 
-# Read CORS origins from environment variable, fallback to localhost:3000
-origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000")
-allow_origins = [origin.strip() for origin in origins_env.split(",") if origin.strip()]
+# Keep the deployed frontend available even if Render has not refreshed an
+# environment-variable change yet. Additional origins can still be supplied
+# through ALLOWED_ORIGINS as a comma-separated list.
+origins_env = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:3000,https://matrukavach-ai-v1.vercel.app",
+)
+allow_origins = [
+    origin.strip().rstrip("/")
+    for origin in origins_env.split(",")
+    if origin.strip()
+]
+if "https://matrukavach-ai-v1.vercel.app" not in allow_origins:
+    allow_origins.append("https://matrukavach-ai-v1.vercel.app")
 
 app.add_middleware(
     CORSMiddleware,
