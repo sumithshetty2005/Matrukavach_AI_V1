@@ -17,5 +17,6 @@ COPY . .
 # Expose port 8000
 EXPOSE 8000
 
-# Run FastAPI socket app
-CMD ["sh", "-c", "uvicorn main:socket_app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Run the FastAPI HTTP app. The browser-facing API requires FastAPI's CORS
+# middleware to handle requests before any Socket.IO protocol dispatch.
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
