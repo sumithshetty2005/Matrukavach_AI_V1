@@ -16,26 +16,26 @@ export default function AshaDashboard() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        fetch(`${API_BASE_URL}/mothers`)
+        const controller = new AbortController();
+
+        fetch(`${API_BASE_URL}/mothers/summary`, { signal: controller.signal })
             .then(res => {
                 if (!res.ok) throw new Error("Server error");
                 return res.json();
             })
             .then(data => {
-                const sorted = [...data].sort((a: any, b: any) => {
-                    const idA = a.id || "";
-                    const idB = b.id || "";
-                    return idA.localeCompare(idB);
-                });
-                setMothers(sorted);
+                setMothers(data);
                 setError(null);
                 setLoading(false);
             })
             .catch(err => {
+                if (err.name === "AbortError") return;
                 console.error("Failed to fetch mothers:", err);
                 setError(err.message || "Failed to fetch");
                 setLoading(false);
             });
+
+        return () => controller.abort();
     }, []);
 
     return (

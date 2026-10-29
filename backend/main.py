@@ -199,6 +199,29 @@ async def assess_risk(vitals: VitalsInput, session: SessionDep):
 def get_mothers(session: SessionDep):
     return session.exec(select(MotherProfile)).all()
 
+@app.get("/mothers/summary")
+def get_mother_summaries(session: SessionDep):
+    """Return only the fields needed by the ASHA dashboard list."""
+    rows = session.exec(
+        select(
+            MotherProfile.id,
+            MotherProfile.name,
+            MotherProfile.location,
+            MotherProfile.age,
+            MotherProfile.gestational_age_weeks,
+        ).order_by(MotherProfile.id)
+    ).all()
+    return [
+        {
+            "id": row[0],
+            "name": row[1],
+            "location": row[2],
+            "age": row[3],
+            "gestational_age_weeks": row[4],
+        }
+        for row in rows
+    ]
+
 @app.get("/mother/{mother_id}", response_model=MotherProfile)
 def get_mother(mother_id: str, session: SessionDep):
     mother = session.get(MotherProfile, mother_id)

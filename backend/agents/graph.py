@@ -24,8 +24,8 @@ class PlanetaryIntelligence(BaseModel):
 class GraphState(TypedDict):
     mother_id: str
     name: str
-    latitude: float   # <--- Add dynamic latitude
-    longitude: float  # <--- Add dynamic longitude
+    latitude: float   
+    longitude: float 
     clinical_vitals: ClinicalVitals
     planetary_intelligence: PlanetaryIntelligence
     
@@ -108,11 +108,9 @@ def clinical_agent_node(state: GraphState) -> Dict:
 
 def geospatial_agent_node(state: GraphState) -> Dict:
     """Agent 2: Dynamically fetches environmental indicators via Open-Meteo for the patient's location."""
-    # Pull dynamic coordinates from state (with fallback to default if missing)
     lat = state.get("latitude", 19.072)
     lon = state.get("longitude", 72.882)
     
-    # Invoke the tool function with dynamic coordinates
     env_res = get_environmental_data.invoke({
         "latitude": lat,
         "longitude": lon
