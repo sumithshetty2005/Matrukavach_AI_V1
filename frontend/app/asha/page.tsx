@@ -18,11 +18,21 @@ export default function AshaDashboard() {
     useEffect(() => {
         const controller = new AbortController();
 
-        fetch(`${API_BASE_URL}/mothers/summary`, { signal: controller.signal })
-            .then(res => {
-                if (!res.ok) throw new Error("Server error");
-                return res.json();
-            })
+        const loadMothers = async () => {
+            try {
+                const summaryResponse = await fetch(`${API_BASE_URL}/mothers/summary`, { signal: controller.signal });
+                if (!summaryResponse.ok) throw new Error(`Summary endpoint returned ${summaryResponse.status}`);
+                return await summaryResponse.json();
+            } catch (summaryError) {
+                if (controller.signal.aborted) throw summaryError;
+                // Older backend deployments may not have the optimized endpoint yet.
+                const legacyResponse = await fetch(`${API_BASE_URL}/mothers`, { signal: controller.signal });
+                if (!legacyResponse.ok) throw new Error(`Patient request returned ${legacyResponse.status}`);
+                return await legacyResponse.json();
+            }
+        };
+
+        loadMothers()
             .then(data => {
                 setMothers(data);
                 setError(null);
@@ -59,8 +69,8 @@ export default function AshaDashboard() {
                         <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-start gap-3 shadow-sm">
                             <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                             <div>
-                                <p className="font-bold">{t("mother.patientNotFound").replace("Patient not found.", "Database Connection Offline")}</p>
-                                <p className="text-sm mt-0.5 text-red-700">Please make sure the backend server is running locally.</p>
+                                <p className="font-bold">Unable to load patient profiles</p>
+                                <p className="text-sm mt-0.5 text-red-700">Check your connection and try again.</p>
                             </div>
                         </div>
                     )}
@@ -69,7 +79,7 @@ export default function AshaDashboard() {
                         <div className="text-center py-10 text-gray-900 animate-pulse">{t("asha.loadingProfiles")}</div>
                     ) : (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {mothers.length === 0 && (
+                            {!error && mothers.length === 0 && (
                                 <div className="col-span-3 text-center py-10 text-gray-500">
                                     {t("asha.noRecords")}
                                 </div>
