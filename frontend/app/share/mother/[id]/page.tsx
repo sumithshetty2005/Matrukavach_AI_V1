@@ -105,11 +105,11 @@ function SharedContent() {
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900 leading-tight">{mother.name}</h1>
                   <div className="flex items-center gap-3 text-xs font-medium text-gray-500 mt-1">
-                    <span>ID: {mother.mother_id}</span>
+                    <span>ID: {mother.id}</span>
                     <span>•</span>
-                    <span>{mother.age} {t("mother.age")}</span>
+                    <span>{mother.age} {t("common.age")}</span>
                     <span>•</span>
-                    <span className="flex items-center gap-0.5"><MapPin className="w-3.5 h-3.5" /> {mother.village}</span>
+                    <span className="flex items-center gap-0.5"><MapPin className="w-3.5 h-3.5" /> {mother.location || "—"}</span>
                   </div>
                 </div>
               </div>
@@ -145,11 +145,12 @@ function SharedContent() {
                           </span>
                         )}
                       </div>
-                      <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-xs font-semibold text-gray-700">
-                        <div>BP: <span className="font-bold text-gray-900">{record.vitals.systolic}/{record.vitals.diastolic}</span></div>
-                        <div>Weight: <span className="font-bold text-gray-900">{record.vitals.weight} kg</span></div>
-                        <div>Hb: <span className="font-bold text-gray-900">{record.vitals.hemoglobin} g/dL</span></div>
-                        <div>Glucose: <span className="font-bold text-gray-900">{record.vitals.glucose} mg/dL</span></div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-2 gap-x-4 text-xs font-semibold text-gray-700">
+                        <div>BP: <span className="font-bold text-gray-900">{record.vitals.systolic_bp ?? "—"}/{record.vitals.diastolic_bp ?? "—"} mmHg</span></div>
+                        <div>Weight: <span className="font-bold text-gray-900">{record.vitals.weight_kg ?? "—"} kg</span></div>
+                        <div>Hb: <span className="font-bold text-gray-900">{record.vitals.hemoglobin ?? "—"} g/dL</span></div>
+                        <div>Glucose: <span className="font-bold text-gray-900">{record.vitals.glucose ?? "—"} mg/dL</span></div>
+                        <div>Heart rate: <span className="font-bold text-gray-900">{record.vitals.heart_rate ?? "—"} bpm</span></div>
                       </div>
                     </div>
                   </Card>
